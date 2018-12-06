@@ -31,5 +31,3 @@ Mainly done with python but also other languages for learning purposes.
 | 23 |  |                    | :heavy_check_mark: |                    |
 | 24 |  |                    | :heavy_check_mark: |                    |
 | 25 |  |                    | :heavy_check_mark: |                    |
-
-:heavy_check_mark::heavy_check_mark:
