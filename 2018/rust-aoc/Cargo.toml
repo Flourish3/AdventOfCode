@@ -1,0 +1,15 @@
+[package]
+name = "rust-aoc"
+version = "0.1.0"
+authors = ["Johan <johan.tillmar@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+[[bin]]
+name = "day01"
+path = "src/day01.rs"
+
+[[bin]]
+name = "day02"
+path = "src/day02.rs"
