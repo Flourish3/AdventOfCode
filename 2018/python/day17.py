@@ -3,6 +3,30 @@ import re
 from collections import defaultdict
 
 def part1(tiles, minY, maxY):
+    equilibrium = False
+    while not equilibrium:
+        for k,w in tiles.items():
+            if w == '+' or w == '|':
+                x,y = k
+                if (x,y+1) not in tiles:
+                    tiles[(x,y+1)] = "|"
+                elif tiles[(x,y+1)] == "#":
+                    i = 0
+                    while tiles[(x+i,y)] != "#":
+                        tiles[(x+i,y)] = "~"
+                        i += 1
+                    i = 0
+                    while tiles[(x-i,y)] != "#":
+                        tiles[(x+i,y)] = "~"
+                        i += 1
+                elif tiles[(x,y+1)] == "~":
+                     i = 0
+                    while tiles[(x+i,y)] != "#" and tiles[(x+i,y+1)] == "~":
+                        if tiles[(x+i,y)]
+                        i += 1
+
+
+
 
 
 
