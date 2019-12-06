@@ -1,41 +1,42 @@
 # Advent of code - Day 20
 
-def scout(x,y,karta,line):
-    nextD = line[0]
-    while nextD != "(" and nextD != "$":
-        if nextD != "^":
-            if nextD == "N":
-                karta[(x,y+1)] = "-"
-                karta[(x,y+2)] = "."
-                y = y+2
-            elif nextD == "E":
-                karta[(x+1,y)] = "|"
-                karta[(x+2,y)] = "."
-                x = x+2
-            elif nextD == "S":
-                karta[(x,y-1)] = "-"
-                karta[(x,y-2)] = "."
-                y = y-2
-            elif nextD == "W":
-                karta[(x-1,y)] = "|"
-                karta[(x-2,y)] = "."
-                x = x-2
-            line = line[1:]
-            nextD = line[0]
+from collections import defaultdict
 
-
-
-
+dirs = {
+    "N" : (0,1),
+    "E" : (1,0),
+    "S" : (0,-1),
+    "W" : (-1,0)
+}
 
 def main():
     # Read input
     line = open("../data/input20.txt").readline().strip()
+    positions = []
+    x, y = 5000,5000
+    prevX, prevY = x,y
+    distances = defaultdict(int)
 
-    # Turn input into rooms
-    karta = {}
-    x = 0
-    y = 0
-    karta[(x,y)] = "."
-    karta = scout(x,y,karta,line)
+    for c in line[1:-1]:
+        if c == "(":
+            positions.append((x,y))
+        elif c == "|":
+            x,y = positions[-1]
+        elif c == ")":
+            x,y = positions.pop()
+        else:
+            dx,dy = dirs[c]
+            x += dx
+            y += dy
+
+        if distances[(x, y)] != 0:
+            distances[(x, y)] = min(distances[(x, y)], distances[(prevX, prevY)]+1)
+        else:
+            distances[(x, y)] = distances[(prevX, prevY)]+1
+
+        prevX, prevY = x, y
+
+    print("Part 1: {}".format(max(distances.values())))
+    print("Part 2: {}".format(len([x for x in distances.values() if x >= 1000])))
 
 main()

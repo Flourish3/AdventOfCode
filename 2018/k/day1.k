@@ -1,0 +1,1 @@
+data: "i"$0: "../data/input01.txt"
