@@ -41,10 +41,14 @@ def getIngredForMaterial(name, needed, leftOvers):
 
     oresNeededList = []
     for i in ingredientsNeeded:
+        takenFromLeftOver = 0
+        while i[1]  in leftOvers:
+            takenFromLeftOver += 1
+            leftOvers.remove(i[1])
 
         if i[1] == "ORE":
-            leftOvers.concat(["ORE"]*(i[0]-needed))
-            oresNeededList.concat(["ORE"]*needed)
+            leftOvers.extend(["ORE"]*(i[0]-needed))
+            oresNeededList.extend(["ORE"]*needed)
         else:
             oresNeededList.append(getIngredForMaterial(i[1], i[0], leftOvers))
 
