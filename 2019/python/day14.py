@@ -2,24 +2,21 @@
 
 import re
 import math
+import collections
 
 lines = [l.strip() for l in open("../data/input14.txt").readlines()]
 
 groupFind = re.compile(r"((\d+) (\w+))")
 
-
 class Material():
-
     def __init__(self, name, quantity, ingredients):
         self.name = name
         self.created = int(quantity)
         self.ingrediends = list(map(lambda ingredient: (
             int(ingredient[0]), ingredient[1]), ingredients))
-        print(self.ingrediends)
 
     def __repr__(self):
         return "Name: {}, creates {} from {}".format(self.name, self.created, ", ".join(list(map(lambda x: x[1], self.ingrediends))))
-
 
 materialList = []
 for l in lines:
@@ -29,32 +26,46 @@ for l in lines:
 
     materialList.append(Material(result[2], result[1], ingredients))
 
-
 matDict = {m.name: m for m in materialList}
 
-
 def getIngredForMaterial(name, needed, leftOvers):
-    mat = matDict[name]
-    iterationsNeeded = math.ceil(needed/mat.created)
+    material = matDict[name]
+    takenFromLeftOver = 0
+    while name  in leftOvers:
+        takenFromLeftOver += 1
+        leftOvers.remove(name)
+    iterationsNeeded = math.ceil((needed-takenFromLeftOver)/material.created)
+    leftOvers.extend([name]*(iterationsNeeded*material.created-((needed-takenFromLeftOver))))
 
-    ingredientsNeeded = list(map(lambda ingredient: (ingredient[0] * iterationsNeeded, ingredient[1]), mat.ingrediends))
+    ingredientsNeeded = list(map(lambda ingredient: (ingredient[0] * iterationsNeeded, ingredient[1]), material.ingrediends))
 
-    oresNeededList = []
-    for i in ingredientsNeeded:
-        takenFromLeftOver = 0
-        while i[1]  in leftOvers:
-            takenFromLeftOver += 1
-            leftOvers.remove(i[1])
+    oresNeededList = 0
+    for need, ingredient in ingredientsNeeded:
 
-        if i[1] == "ORE":
-            leftOvers.extend(["ORE"]*(i[0]-needed))
-            oresNeededList.extend(["ORE"]*needed)
+        if ingredient == "ORE":
+            oresNeededList += need
         else:
-            oresNeededList.append(getIngredForMaterial(i[1], i[0], leftOvers))
+            oresUsed, leftOvers = getIngredForMaterial(ingredient, need, leftOvers)
+            oresNeededList += oresUsed
 
 
-    return oresNeededList
+    return oresNeededList, leftOvers
 
 
 leftOvers = []
-print("Part 1: {} ".format(getIngredForMaterial("FUEL", 1, leftOvers)))
+oreToFuel, leftOvers = getIngredForMaterial("FUEL", 1, leftOvers)
+totalOre = 1000000000000
+
+minFuel = math.floor(totalOre/oreToFuel)
+maxFuel = 2*math.floor(totalOre/oreToFuel)
+
+while maxFuel - minFuel > 1:
+    midOre, left = getIngredForMaterial("FUEL", math.floor((maxFuel+minFuel)/2), [])
+
+    if midOre < totalOre:
+        minFuel = math.floor((maxFuel+minFuel)/2)
+    else:
+        maxFuel = math.floor((maxFuel+minFuel)/2)
+
+print("Part 1: {} ".format(oreToFuel))
+print("Part 2: {}".format(minFuel))
