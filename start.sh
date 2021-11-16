@@ -15,4 +15,4 @@ mkdir -p "$(dirname ${OUTPUT})"
 echo "#Advent of Code - Day ${DAY}" > ${OUTPUT}
 mv ${PUZZLE_FILE} "${YEAR}/data/${PUZZLE_FILE}"
 
-code "${OUTPUT}"
+#code "${OUTPUT}"
