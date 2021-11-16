@@ -1,28 +1,27 @@
+#![feature(test)]
+
 extern crate test;
 
-use std::collections::HashSet;
-use std::cell::Cell;
 use std::fs::File;
 use std::io::prelude::*;
+use std::iter::successors;
 
-fn part1(input: &str) -> i32 {
-    input.lines().map(|t| t.parse::<i32>().unwrap()).sum()
+fn fuel(mass: &u32) -> Option<u32> { 
+    (mass / 3).checked_sub(2)
 }
 
-fn part2(input: &str) -> i32 {
-    let mut seen : HashSet<i32> = HashSet::new();
-    let freq = Cell::new(0);
-
+fn part1(input: &Vec<u32>) -> u32 {
     input
-        .lines()
-        .map(|t| t.parse::<i32>().unwrap())
-        .cycle()
-        .take_while(|_| seen.insert(freq.get()))
-        .for_each(|n| {
-            freq.update(|old| old + n);
-        });
+    .into_iter()
+    .flat_map(|m| fuel(m))
+    .sum()
+}
 
-    return freq.get();
+fn part2(input: &Vec<u32>) -> u32 {
+    input
+    .into_iter()
+    .flat_map(|m| successors(fuel(m), fuel).collect::<Vec<_>>())
+    .sum()
 }
 
 fn main() {
@@ -31,29 +30,25 @@ fn main() {
         .expect("File not found")
         .read_to_string(&mut contents)
         .expect("Something went wrong reading the file");
+    let input = contents.lines().flat_map(|t| t.parse::<u32>()).collect::<Vec<u32>>();
 
-    println!("Part 1: {}", part1(&contents));
-    println!("Part 2: {}", part2(&contents));
+    println!("Part 1: {}", part1(&input));
+    println!("Part 2: {}", part2(&input));
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test::{Bencher, black_box};
+    use test::{Bencher};
 
     #[test]
     fn test_p1(){
-        assert_eq!(part1("+1\n+1\n+1"), 3);
-        assert_eq!(part1("+1\n+1\n-2"), 0);
-        assert_eq!(part1("-1\n-2\n-3"), -6);
+        assert_eq!(part2(&vec!(12_u32)), 2);
     }
 
     #[test]
     fn test_p2(){
-        assert_eq!(part2("+1\n-1"), 0);
-        assert_eq!(part2("+3\n+3\n+4\n-2\n-4"), 10);
-        assert_eq!(part2("-6\n+3\n+8\n+5\n-6"), 5);
-        assert_eq!(part2("+7\n+7\n-2\n-7\n-4"), 14);
+        assert_eq!(part2(&vec!(100756_u32)), 50346);
     }
 
     #[bench]
@@ -63,9 +58,10 @@ mod tests {
             .expect("File not found")
             .read_to_string(&mut contents)
             .expect("Something went wrong reading the file");
-
+        let input = contents.lines().flat_map(|t| t.parse::<u32>()).collect::<Vec<u32>>();
+        
         b.iter(|| {
-            part1(&contents);
+            part1(&input);
         });
     }
 
@@ -76,9 +72,10 @@ mod tests {
             .expect("File not found")
             .read_to_string(&mut contents)
             .expect("Something went wrong reading the file");
-
+        let input = contents.lines().flat_map(|t| t.parse::<u32>()).collect::<Vec<u32>>();
+        
         b.iter(|| {
-            part2(&contents);
+            part2(&input);
         });
     }
 }
